@@ -1,0 +1,95 @@
+import pandas as pd
+
+# Create a DataFrame with number of passengers from 1 to 64
+data = {
+    'Total number of passengers': range(1, 65)
+}
+
+df = pd.DataFrame(data)
+
+# Calculating the other columns based on the number of passengers
+df['Variable Cost'] = df['Total number of passengers'] * 150
+df['Total Cost'] = df['Variable Cost'] + 1000
+df['Revenue'] = df['Total number of passengers'] * 300
+df['Profit'] = df['Revenue'] - df['Total Cost']
+
+# Finding the profit for 56 passengers
+profit_56_passengers = df.loc[df['Total number of passengers'] == 56, 'Profit'].values[0]
+profit_56_passengers, df.head()
+
+
+from scipy.stats import norm
+
+# Airplane capacity
+plane_capacity = 64
+
+# Normal distribution parameters for passengers showing up
+mean_show_up = 68
+std_dev_show_up = 5
+
+# Probability that more passengers show up than the number of seats available
+probability_overbooked = 1 - norm.cdf(plane_capacity, mean_show_up, std_dev_show_up)
+probability_overbooked
+
+
+# Find the number of passengers corresponding to the upper 10% of the distribution
+passengers_upper_10 = norm.ppf(0.90, mean_show_up, std_dev_show_up)
+passengers_upper_10
+
+
+# Probability that less than or equal to 60 passengers show up
+probability_less_60 = norm.cdf(60, mean_show_up, std_dev_show_up)
+probability_less_60
+
+
+# Parameters for Process C
+mean_length_C = 202  # average length in cm
+std_dev_length_C = 1.5  # standard deviation in cm
+
+# Minimum acceptable length
+min_length = 200
+
+# Probability that a pipe produced by Process C is shorter than 200 cm and gets rejected
+probability_rejected_C = norm.cdf(min_length, mean_length_C, std_dev_length_C)
+probability_rejected_C
+
+
+# Define the new range of acceptable lengths
+min_acceptable_length = 199
+max_acceptable_length = 202
+
+# Calculate the rejection probabilities for each process under the new requirements
+# Process A
+mean_A, std_A = 200, 0.5
+prob_rejected_A = (norm.cdf(min_acceptable_length, mean_A, std_A) +
+                   (1 - norm.cdf(max_acceptable_length, mean_A, std_A)))
+
+# Process B
+mean_B, std_B = 201, 1
+prob_rejected_B = (norm.cdf(min_acceptable_length, mean_B, std_B) +
+                   (1 - norm.cdf(max_acceptable_length, mean_B, std_B)))
+
+# Process C
+mean_C, std_C = 202, 1.5
+prob_rejected_C = (norm.cdf(min_acceptable_length, mean_C, std_C) +
+                   (1 - norm.cdf(max_acceptable_length, mean_C, std_C)))
+
+prob_rejected_A, prob_rejected_B, prob_rejected_C
+
+
+# Expected profit calculations for each process, considering rejection probabilities and costs
+
+# Process A
+prob_rejected_A = norm.cdf(200, 200, 0.5)
+profit_per_pipe_A = (1 - prob_rejected_A) * 200 - 140
+
+# Process B
+prob_rejected_B = norm.cdf(200, 201, 1)
+profit_per_pipe_B = (1 - prob_rejected_B) * 200 - 160
+
+# Process C
+prob_rejected_C = norm.cdf(200, 202, 1.5)
+profit_per_pipe_C = (1 - prob_rejected_C) * 200 - 177
+
+profit_per_pipe_A, profit_per_pipe_B, profit_per_pipe_C
+
