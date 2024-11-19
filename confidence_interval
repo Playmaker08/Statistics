@@ -1,54 +1,52 @@
 ## Question: The widget store owner tells you that 200 customers arrive and purchase a widget from the store each day. Assuming you must sell 30 of your widgets to cover the transportation costs, and given the probability of 1/6, use a binomial distribution to estimate the probability of at least covering the transportation costs (that is, the probability of selling at least 30 widgets). Write your answer as a probability (not a percent) rounded to 4 decimals.
 
 from scipy.stats import binom
-
 # Given values
 n = 200  # number of customers
 p = 1 / 6  # probability of selling a widget
 x = 30  # minimum widgets needed to cover transportation costs
-
 # Calculate the probability of selling at least 30 widgets
 probability_at_least_30 = 1 - binom.cdf(x - 1, n, p)
-
 # Round to 4 decimal places
 probability_at_least_30_rounded = round(probability_at_least_30, 4)
 probability_at_least_30_rounded
 
-
 ## Question: How many minimum number of people would have to visit the store to give you at least a 0.95 probability of covering the transportation costs?
-
 # Define the target probability
 target_probability = 0.95
-
 # Start with a reasonable range for "n"
 n = 200  # Starting guess for number of customers
-
 # Iteratively find the minimum n
 while True:
     probability = 1 - binom.cdf(30 - 1, n, p)
     if probability >= target_probability:
         break
     n += 1
-
 n
 
-
-## Question: The widget store manager points out that not all widget brands get equal purchase rates. A brand on premium shelf space has a 0.28 probability of being selected by each customer. He is willing to give you premium shelf space at the front of the store for a small fee. The additional fee, plus the original transportation costs, would raise the minimum number of widgets you would have to sell to 40 (to cover transportation costs and additional fee).
-
-Assuming 200 customers come into the store, use a binomial distribution to estimate the probability of at least covering the transportation costs and additional fee. Write your answer as a probability (not a percent) rounded to 4 decimals.
+## Question: The widget store manager points out that not all widget brands get equal purchase rates. A brand on premium shelf space has a 0.28 probability of being selected by each customer. He is willing to give you premium shelf space at the front of the store for a small fee. The additional fee, plus the original transportation costs, would raise the minimum number of widgets you would have to sell to 40 (to cover transportation costs and additional fee). Assuming 200 customers come into the store, use a binomial distribution to estimate the probability of at least covering the transportation costs and additional fee. Write your answer as a probability (not a percent) rounded to 4 decimals.
 
 # Updated probability for premium shelf space
 p_premium = 0.28  # probability of selection
 x_new = 40  # minimum widgets needed with additional fee
-
 # Calculate the probability of selling at least 40 widgets
 probability_at_least_40 = 1 - binom.cdf(x_new - 1, n=200, p=p_premium)
-
 # Round to 4 decimal places
 probability_at_least_40_rounded = round(probability_at_least_40, 4)
 probability_at_least_40_rounded
 
-
 ## Question: The widget store manager reminds you that while the average number of people that show up each day is 200, the actual number varies. He tells you that the customers that show up each day can be modeled with a Poisson distribution where lambda = 200. 
 
 What is the probability that at least 200 customers arrive (that is, either 200 or more than 200 customers arrive)? Write your answer as a probability (not a percent) rounded to 4 decimals.
+from scipy.stats import poisson
+
+# Given value of lambda
+lambda_val = 200
+
+# Calculate the probability of at least 200 customers arriving
+probability_at_least_200 = 1 - poisson.cdf(199, lambda_val)
+
+# Round to 4 decimal places
+probability_at_least_200_rounded = round(probability_at_least_200, 4)
+probability_at_least_200_rounded
+
