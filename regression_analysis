@@ -1,0 +1,50 @@
+# Renaming columns for easier use
+data.rename(columns={
+    'Sales per Square Foot ($)': 'Sales_per_Sq_Ft',
+    'Size of Store (in Sq. Ft.)': 'Store_Size',
+    'Advertising Dollars': 'Advertising',
+    'Number of Products Offered in Store': 'Num_Products'
+}, inplace=True)
+
+# Defining dependent and independent variables
+X = data[['Store_Size', 'Advertising', 'Num_Products']]
+y = data['Sales_per_Sq_Ft']
+
+# Adding a constant for the intercept
+X = sm.add_constant(X)
+
+# Fitting the multiple regression model
+model = sm.OLS(y, X).fit()
+
+# Displaying the coefficients
+model_summary = model.summary()
+model.params.round(3)
+
+# Define the values for the independent variables
+store_size = 60000
+advertising = 70000
+num_products = 30000
+
+# Calculate the expected Sales per Square Foot
+expected_sales = (
+    model.params['const'] +
+    model.params['Store_Size'] * store_size +
+    model.params['Advertising'] * advertising +
+    model.params['Num_Products'] * num_products
+)
+
+round(expected_sales, 2)
+
+
+# Extract the R-squared value from the model summary
+r_squared = model.rsquared
+round(r_squared, 2)
+
+
+# Calculate residual degrees of freedom
+n = len(data)  # Number of observations
+k = len(model.params) - 1  # Number of predictors
+residual_df = n - (k + 1)
+residual_df
+
+
