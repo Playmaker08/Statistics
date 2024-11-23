@@ -1,0 +1,91 @@
+from statsmodels.api import OLS, add_constant
+import pandas as pd
+
+# Preprocess the data: convert categorical variables to dummy variables
+data_clean = sheet1_data.copy()
+
+# Create dummy variables for 'Attended Review Session'
+data_clean = pd.get_dummies(data_clean, columns=['Attended Review Session'], drop_first=True)
+
+# Rename columns for clarity
+data_clean.rename(columns={'Attended Review Session_Yes': 'Attended_Review_Session'}, inplace=True)
+
+# Prepare the dependent and independent variables
+X = data_clean[['Attended_Review_Session', 'Mid-Term Score', 'Homework Score']]
+y = data_clean['Final Exam Score']
+
+# Add a constant for the intercept
+X = add_constant(X)
+
+# Fit the multiple regression model
+model = OLS(y, X).fit()
+
+# Display the summary of the regression results
+model_summary = model.summary()
+model_summary
+
+
+# Extract the coefficients from the model
+intercept = model.params['const']
+coef_attended_review_session = model.params['Attended_Review_Session']
+coef_midterm = model.params['Mid-Term Score']
+coef_homework = model.params['Homework Score']
+
+# Predict the final exam score for the given conditions
+# Mid-Term Score = 0, Homework Score = 0, Did not attend review session (Attended_Review_Session = 0)
+predicted_score = intercept + (coef_attended_review_session * 0) + (coef_midterm * 0) + (coef_homework * 0)
+
+# Round the predicted score to the nearest whole number
+predicted_score_rounded = round(predicted_score)
+predicted_score_rounded
+
+
+# Hypothesis test: Coefficient of 'Attended_Review_Session' = 10
+# Null Hypothesis: Coefficient = 10
+# Alternate Hypothesis: Coefficient ≠ 10
+
+# Extract the coefficient and standard error for 'Attended_Review_Session'
+coef_review_session = model.params['Attended_Review_Session']
+std_err_review_session = model.bse['Attended_Review_Session']
+
+# Calculate the t-statistic for testing if the coefficient equals 10
+t_statistic = (coef_review_session - 10) / std_err_review_session
+
+# Round the t-statistic to two decimal points
+t_statistic_rounded = round(t_statistic, 2)
+t_statistic_rounded
+
+
+from scipy.stats import t
+
+# Degrees of freedom (df) = n - k - 1, where n is the number of observations and k is the number of predictors
+n = len(data_clean)
+k = X.shape[1] - 1  # Number of predictors
+df = n - k - 1
+
+# Calculate the two-tailed t critical value for α = 0.05
+alpha = 0.05
+t_cutoff = t.ppf(1 - alpha / 2, df)
+
+# Calculate the absolute value and round to two decimal places
+t_cutoff_abs = round(abs(t_cutoff), 2)
+t_cutoff_abs
+
+
+# Calculate the confidence interval for the coefficient of 'Attended_Review_Session'
+# Confidence level = 95%
+
+# Formula for the confidence interval: coef ± t_cutoff * std_err
+lower_limit = coef_review_session - t_cutoff * std_err_review_session
+
+# Round to two decimal places
+lower_limit_rounded = round(lower_limit, 2)
+lower_limit_rounded
+
+
+# Calculate the upper limit of the confidence interval
+upper_limit = coef_review_session + t_cutoff * std_err_review_session
+
+# Round to two decimal places
+upper_limit_rounded = round(upper_limit, 2)
+upper_limit_rounded
